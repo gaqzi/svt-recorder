@@ -1,0 +1,51 @@
+#!/usr/bin/env ruby
+# -*- coding: utf-8 -*-
+$VERBOSE = true
+
+begin
+  require 'svt/downloader'
+rescue LoadError
+  $:.unshift File.join(File.dirname(File.expand_path(__FILE__)), '..', 'lib')
+  require 'svt/downloader'
+end
+
+require 'tempfile'
+require 'readline'
+require 'shellwords'
+
+if ARGV.empty? or ARGV[0].match(/\A(-h)|((--)?help)\Z/i)
+  puts "Usage: #{$0.split(/\//)[-1]} <SVT Play URI> [name of output file]"
+  puts "\tAll parts of the video at SVT Play URI will be downloaded."
+  puts "\tIf you've supplied an output name that will be used, otherwise you'll be asked."
+  puts ''
+  exit 0
+elsif not ARGV[0].match(/svtplay/)
+  puts "No valid SVT Play uri supplied"
+  exit 1
+end
+
+downloader = SVT::Downloader.new(ARGV[0])
+bitrates = downloader.bitrates
+output_file = if ARGV[1]
+                ARGV[1].strip
+              else
+                puts 'To edit the filename press up arrow'
+                Readline::HISTORY.push downloader.title
+                name = Readline::readline("Filename: [#{downloader.title}] ")
+                if not name.strip.empty?
+                  name.strip
+                else
+                  downloader.title
+                end
+              end + '.mp4'
+
+
+begin
+  list = Tempfile.new('svt-downloader')
+  list.write downloader.download_urls(bitrates[0]).join("\n")
+  list.close
+
+  `wget --input-file=#{list.path} --output-document=#{output_file.shellescape}`
+ensure
+  list.unlink
+end

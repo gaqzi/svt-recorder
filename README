@@ -1,0 +1,21 @@
+Ett program som tar adressen till en video hos SVT Play och sedan med hjälp av
+wget tankar ner den högsta upplösningen tillgänglig.
+
+Det här scriptet skrevs därför jag vill kunna spela SVT Play på min TV,
+men jag har inte datorn direkt kopplad till den.
+Så jag måste tanka ner programmen för att sedan spela upp dem där.
+
+ANVÄNDNING:
+        svt-downloader <SVT Play uri> [spara som]
+Om du inte anger ett namn direkt så kommer den föreslå ett baserat på sidans namn.
+
+KRÄVER:
+Jag har bara testat det här scriptet med Ruby 1.9.2, men det ska fungera
+med 1.8.7 då jag undvikit att använda nyare funktionalitet. Fler tester inför 1.0.
+
+ATT GÖRA:
+- Egen nerladdare eller bättre visning av status istället för denna extreme
+  mängd onödigt text som blixtrar förbi.
+- Göra namngivningen av filerna mer robust, i dagsläget så accepteras
+  felaktiga filnamn
+- Göra en .gem av projektet
