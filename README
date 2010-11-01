@@ -14,8 +14,8 @@ Jag har bara testat det här scriptet med Ruby 1.9.2, men det ska fungera
 med 1.8.7 då jag undvikit att använda nyare funktionalitet. Fler tester inför 1.0.
 
 ATT GÖRA:
-- Egen nerladdare eller bättre visning av status istället för denna extreme
-  mängd onödigt text som blixtrar förbi.
 - Göra namngivningen av filerna mer robust, i dagsläget så accepteras
   felaktiga filnamn
+- Olika nedladdningsmetoder? (Inbyggd, wget)
+- Fejkad webbläsarheader så det inte står Ruby eller wget som klient
 - Göra en .gem av projektet

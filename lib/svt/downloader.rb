@@ -54,7 +54,7 @@ module SVT
     # A naïve parser, but until it turns out to be a problem it'll do
     # The format is:
     #   EXT-X-.... BANDWIDTH=<bitrate>
-    #   uri-to-playlist
+    #   playlist-filename
     def get_streams
       bitrate = nil
       open(@stream).each do |row|

@@ -24,6 +24,32 @@ elsif not ARGV[0].match(/svtplay/)
   exit 1
 end
 
+# Wohoo, don't need wget anymore!
+class HTTPDownload
+  def initialize(list)
+    @list = list
+
+    url = URI.parse(@list[0])
+
+    @server = Net::HTTP.start(url.host, url.port)
+  end
+
+  def fetch_all
+    @list.each_with_index do |url, i|
+      url = URI.parse(url)
+      req = Net::HTTP::Get.new(url.path)
+      req.add_field('Connection', 'keep-alive')
+      res = @server.request(req)
+
+      yield res.body, i + 1
+    end
+  end
+
+  def close ; @server.finish ; end
+  alias :disconnect :close
+end
+
+
 downloader = SVT::Downloader.new(ARGV[0])
 bitrates = downloader.bitrates
 output_file = if ARGV[1]
@@ -40,12 +66,17 @@ output_file = if ARGV[1]
               end + '.mp4'
 
 
-begin
-  list = Tempfile.new('svt-downloader')
-  list.write downloader.download_urls(bitrates[0]).join("\n")
-  list.close
 
-  `wget --input-file=#{list.path} --output-document=#{output_file.shellescape}`
-ensure
-  list.unlink
+File.open(output_file, 'a+') do |video|
+  down = HTTPDownload.new(downloader.download_urls(bitrates[0]))
+  down.fetch_all do |data, part|
+    video.write data
+    print '.'
+  end
+
+  puts "Finished downloading: #{output_file}"
+  down.close
 end
+
+
+# `wget --input-file=#{list.path} --output-document=#{output_file.shellescape}`
