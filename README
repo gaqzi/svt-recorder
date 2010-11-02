@@ -1,21 +1,66 @@
-Ett program som tar adressen till en video hos SVT Play och sedan med hjälp av
-wget tankar ner den högsta upplösningen tillgänglig.
+== VAD OCH VARFÖR
+Det här är ett program som tar adressen till en video hos SVT Play och
+sedan spelar in den högsta upplösningen tillgänglig till en fil på din
+dator. Populärt kallat "ladda ner".
 
-Det här scriptet skrevs därför jag vill kunna spela SVT Play på min TV,
-men jag har inte datorn direkt kopplad till den.
-Så jag måste tanka ner programmen för att sedan spela upp dem där.
+Det här programmet gjorde jag därför jag vill kunna spela program från
+SVT Play på min TV, men jag har ingen dator direkt kopplad till TV:n,
+så jag blir tvungen att först tanka ner programmet för att sedan
+spela upp det där.
 
-ANVÄNDNING:
-        svt-downloader <SVT Play uri> [spara som]
-Om du inte anger ett namn direkt så kommer den föreslå ett baserat på sidans namn.
+== SYSTEMKRAV:
+- Ruby, version 1.8.7 eller senare
 
-KRÄVER:
-Jag har bara testat det här scriptet med Ruby 1.9.2, men det ska fungera
-med 1.8.7 då jag undvikit att använda nyare funktionalitet. Fler tester inför 1.0.
+== Installation
+För att installera det här programmet så behöver du ha
+Ruby samt Rubygems installerat.
 
-ATT GÖRA:
+=== Debian/Ubuntu
+Om du använder Ubuntu så kom ihåg att lägga till sudo först!
+
+I ett Debian/Ubuntusystem så ser du till att ha det så här:
+  # aptitude install ruby rubygems
+
+När Ruby och Rubygems är installerat så skriver du:
+  # gem install svt-recorder
+
+Och då är det bara att använda!
+
+=== Windows
+Ladda ner Ruby från http://www.ruby-lang.org/en/downloads/.
+Jag använde Ruby 1.9.2 RubyInstaller.
+
+OBS! Kryssa i rutan "Add Ruby executables to your PATH" när
+installationsprogrammet frågar var du vill installera Ruby!
+
+Gå till Kör och skriv in: cmd
+
+I den nya kommandoprompten som kom upp skriv:
+  > gem install svt-recorder
+  [... programmet hämtas ned och installeras ...]
+
+Nu kan du använda svt-recorder från kommandoprompten, se nedan på användning.
+
+OBS! Kännt problem att byta namn på filen när programmet frågar i Windows,
+sätt namnet direkt efter URL:en eller tryck ENTER för att godkänna det
+föreslagna namnet.
+
+== ANVÄNDNING:
+  svt-recorder <SVT Play url> [spara som namn]
+Om inget namn är angett så kommer ett namn föreslås baserat på programmets namn.
+
+== ATT GÖRA:
 - Göra namngivningen av filerna mer robust, i dagsläget så accepteras
-  felaktiga filnamn
+  vad som helst som filnamn
 - Olika nedladdningsmetoder? (Inbyggd, wget)
-- Fejkad webbläsarheader så det inte står Ruby eller wget som klient
+- Se till att stora filer laddas ned i mindre bitar, Play Rapport är bara
+  en stor fil i dagsläget och den laddas i minnet.
+- Återupptagning av nerladdning. Eftersom det redan är uppdelat i
+  "chunks" från SVT Play så blir den delen som behöver laddas ned
+  extra relativt liten i sammanhanget. Finns det något bättre sätt än
+  att loopa igenom HEAD-reqs för att bygga upp till totalen? Eftersom
+  varje chunk har en slumpmässig storlek så går det inte att göra
+  någon slags statistisk analys?
 - Göra en .gem av projektet
+- Paketera för Debian/Ubuntu och sätt upp ett repo för nerladdning där
+- Se över vad det skulle innebära att göra ett GUI för Windows

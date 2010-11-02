@@ -1,0 +1,80 @@
+#!/usr/bin/env ruby
+# -*- coding: utf-8 -*-
+
+begin
+  require 'svt/recorder'
+rescue LoadError
+  $:.unshift File.join(File.dirname(File.expand_path(__FILE__)), '..', 'lib')
+  require 'svt/recorder'
+end
+
+require 'tempfile'
+require 'readline'
+require 'ostruct'
+
+if ARGV.empty? or ARGV[0].match(/\A(-h)|((--)?help)\Z/i)
+  puts "Usage: #{$0.split(/\//)[-1]} <SVT Play URL> [name of output file]"
+  puts "\tAll parts of the video at SVT Play URL will be recorded."
+  puts "\tIf you've supplied an output name that will be used, otherwise you'll be asked."
+  puts ''
+  exit 0
+elsif not ARGV[0].match(/(svtplay|playrapport)/)
+  puts "No valid SVT Play or Play Rapport URL supplied"
+  exit 1
+end
+
+# Wohoo, don't need wget anymore!
+class HTTPDownload
+  def initialize(base_url, list)
+    @base_url = URI.parse(base_url)
+    @list = list
+    @headers = {'User-Agent' => 'Mozilla/5.0 (Windows; U; Windows NT 5.2; en-US; rv:1.9.2.10) Gecko/20100914 Firefox/3.6.10'}
+
+    @server = Net::HTTP.start(@base_url.host, @base_url.port)
+  end
+
+  def fetch_all(file)
+    @list.each_with_index do |part, i|
+      res = @server.get(File.join(@base_url.path, part), @headers, file)
+
+      yield i + 1
+    end
+  end
+
+  def close ; @server.finish ; end
+  alias :disconnect :close
+end
+
+data = SVT::Recorder.record(ARGV[0])
+downloader = OpenStruct.new
+downloader.base_url = data[0]
+downloader.parts    = data[1]
+downloader.bitrate  = data[2]
+downloader.title    = data[3]
+
+output_file = if ARGV[1]
+                ARGV[1].strip
+              else
+                puts 'To edit the filename press up arrow'
+                Readline::HISTORY.push downloader.title
+                name = Readline::readline("Filename: [#{downloader.title}] ")
+                if not name.strip.empty?
+                  name.strip
+                else
+                  downloader.title
+                end
+              end + '.mp4'
+
+if File.exists? output_file
+  STDERR.puts "The file '#{output_file}' already exists!"
+  exit 1
+end
+
+File.open(output_file, 'wb+') do |video|
+  down = HTTPDownload.new(downloader.base_url, downloader.parts)
+  print "Progress: "
+  down.fetch_all(video) {|part| print '.' }
+  down.close
+
+  puts "\nFinished recording: #{output_file}"
+end

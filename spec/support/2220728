@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:media="http://search.yahoo.com/mrss" xmlns:svtplay="http://xml.svtplay.se/ns/playrss" version="2.0">
+  <channel>
+    <title>Huvudvärk kan ha orsakat polispådraget i Göteborg</title>
+    <link>http://xml.svtplay.se/v1/videos/2220728</link>
+    <description>Ett telefonsamtal om huvudvärk kan ha varit orsaken till helgens polispådrag i Göteborg. Det menar alla fall två av de män som suttit gripna i helgen.</description>
+    <language>sv</language>
+    <copyright>Texter, bilder, grafik, ljud och annat material i detta XML-dokument tillhör Sveriges Television AB och skyddas av upphovsrättslagen. Innehållet får användas för privat bruk. Mångfaldigande eller förändring i kommersiellt syfte är inte tillåtet utan SVT:s medgivande. Läs mer på svt.se/rss/kontakt.</copyright>
+    <pubDate>Mon, 01 Nov 2010 18:56:52 GMT</pubDate>
+    <lastBuildDate>Mon, 01 Nov 2010 18:56:52 GMT</lastBuildDate>
+    <opensearch:itemsPerPage>1</opensearch:itemsPerPage>
+    <opensearch:totalResults>1</opensearch:totalResults>
+    <opensearch:startIndex>1</opensearch:startIndex>
+    <item svtplay:type="video">
+      <title>Huvudvärk kan ha orsakat polispådraget i Göteborg</title>
+      <link>http://svtplay.se/v/2220728/huvudvark_kan_ha_orsakat_polispadraget_i_goteborg</link>
+      <description>Ett telefonsamtal om huvudvärk kan ha varit orsaken till helgens polispådrag i Göteborg. Det menar alla fall två av de män som suttit gripna i helgen.</description>
+      <category domain="http://xml.svtplay.se/categories/nodeids">103260</category>
+      <pubDate>Mon, 01 Nov 2010 18:56:52 GMT</pubDate>
+      <author>svtplay@svt.se (SVT Play)</author>
+      <guid isPermaLink="false">http://xml.svtplay.se/v1/videos/2220728</guid>
+      <svtplay:category>96244</svtplay:category>
+      <svtplay:titleId>103261</svtplay:titleId>
+      <svtplay:titleName>Rapport</svtplay:titleName>
+      <svtplay:expiryDate>Tue, 01 Nov 2011 18:56:52 GMT</svtplay:expiryDate>
+      <media:thumbnail url="http://media.svt.se/download/mcc/flash/20101101/PR-2010-1101-TOHAGBG1930/PR-2010-1101-TOHAGBG1930_thumb_0.jpg" width="128" height="72" />
+      <media:content bitrate="650.0" duration="141" expression="sample" height="352" lang="sv" type="video/x-flv" width="624" medium="video" url="http://www0.c00928.cdn.qbrick.com/00928/kluster/20101101/PR-2010-1101-TOHAGBG1930.flv">
+        <media:player url="http://svtplay.se/v/2220728/huvudvark_kan_ha_orsakat_polispadraget_i_goteborg" />
+        <media:title>Rapport - Huvudvärk kan ha orsakat polispådraget i Göteborg</media:title>
+        <svtplay:validFromDate>Mon, 01 Nov 2010 18:56:52 GMT</svtplay:validFromDate>
+        <svtplay:validToDate>Tue, 01 Nov 2011 18:56:52 GMT</svtplay:validToDate>
+        <dcterms:valid>start=2010-11-01T18:56:52Z;end=2011-11-01T18:56:52Z;scheme=W3C-DTF</dcterms:valid>
+      </media:content>
+      <media:content height="576" type="image/jpeg" width="720" medium="image" url="http://media.svt.se/download/mcc/flash/20101101/PR-2010-1101-TOHAGBG1930/PR-2010-1101-TOHAGBG1930_start_0.jpg" />
+    </item>
+  </channel>
+</rss>
