@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
 
+#--
 # Since I'm planning to use this library both in Ruby 1.9.2 and 1.8.7
 # and 1.9.2 removes . from LOAD_PATH add this directory to the load path
 $:.push File.expand_path(File.dirname(__FILE__))
@@ -8,7 +9,7 @@ $:.push File.expand_path(File.dirname(__FILE__))
 require 'recorder/play'
 require 'recorder/rapport'
 
-module SVT
+module SVT #:nodoc:
   # == Summary
   # This library will give you the URL:s for recording files from
   # SVT Play and Play rapport.
@@ -32,6 +33,6 @@ module SVT
       end
     end
 
-    VERSION = 0.9
+    VERSION = '0.9.5'
   end
 end

@@ -15,10 +15,9 @@ module SVT
           lambda { SVT::Recorder::Rapport.record($rapport_url) }.should_not raise_error
         end
 
-        it 'should return an array consisting of [base_url, [parts], bitrate, video_title]' do
+        it 'should return an instantiated and ready to use version of itself' do
           data = SVT::Recorder::Rapport.record($rapport_url)
-          data.size.should == 4
-          data[3].should == 'Huvudvärk kan ha orsakat polispådraget i Göteborg'
+          data.title.should == 'Huvudvärk kan ha orsakat polispådraget i Göteborg'
         end
       end
 
@@ -47,13 +46,27 @@ module SVT
           lambda { recorder.part_urls('I AM CRRRRAAZY!!!!') }.should_not raise_error
         end
 
-        it 'should return an array consisting of [base_url, parts, bitrate]' do
-          parts = recorder.part_urls
+        it 'should be ready for downloading' do
+          data = recorder.part_urls
 
-          parts[0].should == 'http://www0.c00928.cdn.qbrick.com/00928/kluster/20101101'
-          parts[1].size.should == 1
-          parts[1][0].should == 'PR-2010-1101-TOHAGBG1930.flv'
-          parts[2].should == 650
+          data.base_url.should == 'http://www0.c00928.cdn.qbrick.com/00928/kluster/20101101'
+          data.parts.size.should == 1
+          data.parts[0].should == 'PR-2010-1101-TOHAGBG1930.flv'
+          data.bitrate.should == 650
+        end
+      end
+
+      describe '#parts' do
+        it 'should work as a block' do
+          recorder.part_urls
+          i = 0
+          recorder.parts {|x| i += 1}
+          i.should == 1
+        end
+
+        it 'should return an array when called without a block' do
+          recorder.part_urls
+          recorder.parts.size.should == 1
         end
       end
     end # /Rapport

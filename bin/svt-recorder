@@ -25,33 +25,56 @@ end
 
 # Wohoo, don't need wget anymore!
 class HTTPDownload
-  def initialize(base_url, list)
-    @base_url = URI.parse(base_url)
-    @list = list
+  def initialize(downloader, output)
+    @base_url = URI.parse(downloader.base_url)
+    @downloader = downloader
     @headers = {'User-Agent' => 'Mozilla/5.0 (Windows; U; Windows NT 5.2; en-US; rv:1.9.2.10) Gecko/20100914 Firefox/3.6.10'}
+    @file = output
 
     @server = Net::HTTP.start(@base_url.host, @base_url.port)
+
+    if block_given?
+      begin
+        yield self
+      ensure
+        close()
+      end
+    end
   end
 
-  def fetch_all(file)
-    @list.each_with_index do |part, i|
-      res = @server.get(File.join(@base_url.path, part), @headers, file)
+  # Will yield the number of megabytes downloaded every megabyte
+  def fetch_all
+    downloaded = 0
+    megabyte = 1024 * 1024
+    mb_down = 0
+    File.open(@file, 'wb+') do |file|
+      @downloader.parts do |part|
+        @server.request_get(File.join(@base_url.path, part), @headers) do |res|
 
-      yield i + 1
-    end
+          res.read_body do |body|
+            file.write body
+            downloaded += body.size
+
+            if downloaded >= megabyte
+              downloaded -= megabyte
+              yield mb_down += 1
+            end
+          end
+
+        end # /@server
+      end # /@list
+    end # /File
   end
 
   def close ; @server.finish ; end
   alias :disconnect :close
 end
 
-data = SVT::Recorder.record(ARGV[0])
-downloader = OpenStruct.new
-downloader.base_url = data[0]
-downloader.parts    = data[1]
-downloader.bitrate  = data[2]
-downloader.title    = data[3]
+# Ensure that all output is written to console when it is asked to,
+# no buffer for you!
+STDOUT.sync = true
 
+downloader = SVT::Recorder.record(ARGV[0])
 output_file = if ARGV[1]
                 ARGV[1].strip
               else
@@ -66,15 +89,14 @@ output_file = if ARGV[1]
               end + '.mp4'
 
 if File.exists? output_file
-  STDERR.puts "The file '#{output_file}' already exists!"
-  exit 1
+  STDERR.puts "\nThe file '#{output_file}' already exists!"
+  overwrite = Readline::readline('Overwrite? Y/N: ')
+
+  exit 1 unless overwrite.match(/Y/i)
 end
 
-File.open(output_file, 'wb+') do |video|
-  down = HTTPDownload.new(downloader.base_url, downloader.parts)
+HTTPDownload.new(downloader, output_file) do |down|
   print "Progress: "
-  down.fetch_all(video) {|part| print '.' }
-  down.close
-
+  down.fetch_all {|part| print '.' }
   puts "\nFinished recording: #{output_file}"
 end

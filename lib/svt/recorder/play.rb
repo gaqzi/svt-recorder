@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+
+lib = File.expand_path(File.dirname(__FILE__))
+$:.unshift lib unless $:.include?(lib)
+require 'base'
+
 require 'open-uri'
 
 module SVT
@@ -17,7 +22,7 @@ module SVT
     #
     # Or for the quick fix:
     #   SVT::Recorder::Play.record(url) # => [base_url, [part_names], bitrate, video_title]
-    class Play
+    class Play < Base
       def initialize(url)
         doc = open(url).read
         # Parsing HTML with Regexps isn't nice, but wanting to use pure Ruby
@@ -27,10 +32,15 @@ module SVT
         if @stream.nil? or @stream.empty?
           raise ArgumentError, "The passed in URL does not contain a valid <video>-tag"
         end
-        @title = doc.match(/<title>(.+)<\/title>/m)[1].sub('| SVT Play', '').strip
 
-        @bitrates = {} # bitrate => stream
-        @base_url = File.dirname(@stream)
+        @title      = doc.match(/<title>(.+)<\/title>/m)[1].sub('| SVT Play', '').strip
+        @bitrates   = {} # bitrate => stream
+        @base_url   = File.dirname(@stream)
+
+        @parts      = []
+        @part_base  = ''
+        @first_part = 0
+        @last_part  = 0
       end
 
       # The title of the video
@@ -46,29 +56,48 @@ module SVT
       # All part URL:s for a specific +bitrate+
       # If no +bitrate+ is specified the highest bitrate is choosen
       def part_urls(bitrate = nil)
-        if bitrate.nil?
-          get_streams() if @bitrates.empty?
-          bitrate = @bitrates.keys.max
-        end
+        @bitrate = if bitrate.nil?
+                     get_streams() if @bitrates.empty?
+                     @bitrates.keys.max
+                   else
+                     bitrate
+                   end
 
-        url = File.join(@base_url, @bitrates[bitrate])
+        url = File.join(@base_url, @bitrates[@bitrate])
 
-        parts = []
         open(url).each do |row|
-          row.strip!
           next if row[0..0] == '#'
+          row.strip!
 
-          parts << row
+          @part_base = File.dirname(row) if @part_base.empty?
+          @last_part += 1
         end
 
-        [@base_url, parts, bitrate]
+        self
+      end
+
+      #--
+      # This recorder is based on a playlist with a lot of small files,
+      # each file is named segment{no}.ts. So by recording the first and
+      # last segment numbers all parts will be shown correctly.
+      def parts
+        if block_given?
+          (@first_part...@last_part).each do |i|
+            yield "#{@part_base}/segment#{i}.ts"
+          end
+        else
+          # I want you Object#tap
+          tmp = []
+          parts {|part| tmp << part }
+          tmp
+        end
       end
 
       # Instantiate the class with +url+ and get all part URL:s for
       # the highest bitrate available.
       def self.record(url)
         recorder = SVT::Recorder::Play.new(url)
-        recorder.part_urls.push recorder.title
+        recorder.part_urls
       end
 
       private

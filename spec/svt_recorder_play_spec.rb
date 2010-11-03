@@ -9,11 +9,10 @@ module SVT
           lambda { SVT::Recorder::Play.record($play_html) }.should_not raise_error
         end
 
-        it 'should return an array consisting of [base_url, [parts], bitrate, video_title]' do
+        it 'should return an instantiated and ready to use version of itself' do
           data = SVT::Recorder::Play.record($play_html)
 
-          data.size.should == 4
-          data[3].should == 'Matvecka: Varför är de smala inte feta? - Dokumentärfilm'
+          data.title.should == 'Matvecka: Varför är de smala inte feta? - Dokumentärfilm'
         end
       end
 
@@ -43,22 +42,42 @@ module SVT
       end
 
       describe '#part_urls' do
-        it 'should return an array consisting of [base_url, parts, bitrate]' do
+        it 'should return itself and respond to base_url, parts, bitrate and title' do
           recorder.bitrates
-          parts = recorder.part_urls(bitrate)
+          data = recorder.part_urls(bitrate)
 
-          parts[0].should == 'spec/support'
-          parts[1].size.should == 308
-          parts[2].should == bitrate
+          data.base_url.should == 'spec/support'
+          data.parts.size.should == 308
+          data.bitrate.should == bitrate
+          data.title.should == 'Matvecka: Varför är de smala inte feta? - Dokumentärfilm'
         end
 
         it 'should choose the highest bitrate available if no bitrate is passed in' do
-          parts = recorder.part_urls
+          data = recorder.part_urls
 
-          parts[2].should == 696752
+          data.bitrate.should == 696752
         end
       end
-    end
+
+      describe '#parts' do
+        it 'should work as a block' do
+          recorder.part_urls
+          i = 0
+          recorder.parts {|x| i += 1}
+          i.should == 308
+        end
+
+        it 'should return an array when called without a block' do
+          recorder.part_urls
+          recorder.parts.size.should == 308
+        end
+
+        it 'should start with the correct directory' do
+          recorder.part_urls
+          recorder.parts[0].should == 'GEOSEMOBIL_1027MATVECKA-PLAY-hts-a-v1_1_Layer1/Period1/segment0.ts'
+        end
+      end
+    end # /Play
   end # /Recorder
 end # /SVT
 
