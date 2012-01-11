@@ -49,19 +49,25 @@ class HTTPDownload
     mb_down = 0
     File.open(@file, 'wb+') do |file|
       @downloader.parts do |part|
-        @server.request_get(File.join(@base_url.path, part), @headers) do |res|
+        begin
+          @server.request_get(File.join(@base_url.path, part),
+                              @headers) do |res|
 
-          res.read_body do |body|
-            file.write body
-            downloaded += body.size
+            res.read_body do |body|
+              file.write body
+              downloaded += body.size
 
-            if downloaded >= megabyte
-              downloaded -= megabyte
-              yield mb_down += 1
+              if downloaded >= megabyte
+                downloaded -= megabyte
+                yield mb_down += 1
+              end
             end
-          end
-
-        end # /@server
+          end # /@server
+        rescue Timeout::Error
+          yield -1
+          @server = Net::HTTP.start(@base_url.host, @base_url.port)
+          retry
+        end
       end # /@list
     end # /File
   end
@@ -97,6 +103,6 @@ end
 
 HTTPDownload.new(downloader, output_file) do |down|
   print "Progress: "
-  down.fetch_all {|part| print '.' }
+  down.fetch_all {|part| print (part > 0)? '.': 'r' }
   puts "\nFinished recording: #{output_file}"
 end
