@@ -1,4 +1,11 @@
-2010-11-03  Björn Andersson  <ba@sanitarium.se>, v0.9.5
+2012-01-15 Björn Andersson <ba@sanitarium.se>, v0.9.6
+
+	Patch received from Anders Eurenius (aes on Github) that will
+	retry a chunk download if it times out.
+
+	Thanks Anders!
+
+2010-11-03 Björn Andersson  <ba@sanitarium.se>, v0.9.5
 
 	* svt-recorder flushes the output buffers when printing information.
 	* svt-recorder one dot in the progress meter is 1MB.
