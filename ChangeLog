@@ -1,3 +1,16 @@
+2012-06-04 Björn Andersson <ba@sanitarium.se>, v1.0.0
+
+	SVT has changed their website and thus the way data is fetched.
+	Changed to the new format which basically is the same for both
+	Play and Rapport now.
+
+	Added Nokogiri as a dependency because REXML doesn't handle broken HTML
+	as well. Sadly SVTPlay.se didn't have valid code that made REXML barf.
+
+	Since I'll most likely not add support for RTMP streams on my own
+	I'm calling this 1.0 and possible support for RTMP will be
+	another major release at that point.
+
 2012-01-15 Björn Andersson <ba@sanitarium.se>, v0.9.6
 
 	Patch received from Anders Eurenius (aes on Github) that will

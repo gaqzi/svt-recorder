@@ -26,13 +26,13 @@ module SVT #:nodoc:
     # Returns an array consisting of:
     # <tt>[base_url, [parts], bitrate, video_title]</tt>
     def self.record(url)
-      if url.match(/playrapport.se/)
-        SVT::Recorder::Rapport.record(url)
-      else
+      if url.match(/svtplay.se/)
         SVT::Recorder::Play.record(url)
+      else
+        SVT::Recorder::Rapport.record(url)
       end
     end
 
-    VERSION = '0.9.6'
+    VERSION = '1.0.0'
   end
 end

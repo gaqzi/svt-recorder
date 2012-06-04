@@ -18,5 +18,8 @@ Gem::Specification.new do |s|
   s.has_rdoc = true
   s.extra_rdoc_files = ['README.en.md']
   s.rdoc_options << '-x spec --main lib/svt/recorder.rb --line-numbers'
-  s.add_development_dependency('rspec', '>= 2.0.0')
+  s.add_dependency('json_pure', '~> 1.0')
+  s.add_dependency('nokogiri', '~> 1.0')
+  s.add_development_dependency('rspec', '~> 2.0.0')
 end
+
