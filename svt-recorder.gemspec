@@ -20,6 +20,6 @@ Gem::Specification.new do |s|
   s.rdoc_options << '-x spec --main lib/svt/recorder.rb --line-numbers'
   s.add_dependency('json_pure', '~> 1.0')
   s.add_dependency('nokogiri', '~> 1.0')
+  s.add_dependency('progress_bar', '~> 0.4')
   s.add_development_dependency('rspec', '~> 2.0.0')
 end
-

@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
+require 'cgi'
 
 module SVT
   module Recorder
@@ -16,6 +17,7 @@ module SVT
     #   url :: The URL from data-json-href, Play have to add modify the URL
     #          to make it absolute. So the caller makes any modifications
     #          before the JSON-file gets fetched.
+    #          Not required to work.
     #
     # Returns:
     #   A hash with these keys:
@@ -24,18 +26,18 @@ module SVT
     def self.fetch_playlist(url, css_path)
       doc = Nokogiri::HTML(open(url).read)
       player = doc.at_css(css_path)
-      stream = player['data-json-href']
-      stream = yield stream
+      stream = CGI.unescape(player['data-json-href'])
+      stream = yield stream if block_given?
 
       js = JSON.parse(open(stream).read)
       if not js['video']['availableOnMobile']
-        raise ArgumentError, "The passed in URL is not available for mobile, non-rtmp"
+        raise ArgumentError, "The passed in URL is not available for mobile"
       end
 
       title = js['context']['title']
       v = js['video']['videoReferences'].find({}) {|v| v['playerType'] == 'ios' }
 
-      {:title => title, :url => v['url']}
+      return({:title => title, :url => CGI.unescape(v['url'])}) if not v.empty?
     end
 
     class Base
@@ -115,6 +117,16 @@ module SVT
         end
       end
 
+      # Returns the number of parts this recording got
+      #
+      # Returns:
+      #   int the numbers of parts, 0 index
+      def parts?
+        part_urls() if @last_part == 0
+
+        return @last_part
+      end
+
       # Yields all +parts+ concatenated with base_url
       def all_parts
         parts do |part|
@@ -124,6 +136,7 @@ module SVT
 
       #--
       # A naïve parser, but until it turns out to be a problem it'll do.
+      # 2012=09-09: If a FQDN address is given only return the basename
       #
       # The format is:
       #   EXT-X-.... BANDWIDTH=<bitrate>
@@ -132,9 +145,10 @@ module SVT
         bitrate = nil
         open(@stream).each do |row|
           row.strip!
+          row = File.basename(row) if row.match(/^http/)
 
           if bitrate
-            @bitrates[bitrate] = row
+            @bitrates[bitrate] = CGI.escape(row)
             bitrate = nil
           end
 

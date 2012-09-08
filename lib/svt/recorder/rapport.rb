@@ -15,7 +15,7 @@ module SVT
     # Usage is the same as for SVT::Recorder::Play.
     class Rapport < Base
       def initialize(url)
-        video = SVT::Recorder.fetch_playlist(url, '.svtplayer') {|url| url }
+        video = SVT::Recorder.fetch_playlist(url, '.svtplayer')
 
         super(video)
       end

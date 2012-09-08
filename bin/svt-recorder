@@ -12,6 +12,7 @@ end
 require 'tempfile'
 require 'readline'
 require 'ostruct'
+require 'progress_bar'
 
 if ARGV.empty? or ARGV[0].match(/\A(-h)|((--)?help)\Z/i)
   puts "Usage: #{$0.split(/\//)[-1]} <SVT Play URL> [name of output file]"
@@ -31,7 +32,6 @@ class HTTPDownload
     @downloader = downloader
     @headers = {'User-Agent' => 'Mozilla/5.0 (Windows; U; Windows NT 5.2; en-US; rv:1.9.2.10) Gecko/20100914 Firefox/3.6.10'}
     @file = output
-
     @server = Net::HTTP.start(@base_url.host, @base_url.port)
 
     if block_given?
@@ -53,15 +53,8 @@ class HTTPDownload
         begin
           @server.request_get(File.join(@base_url.path, part),
                               @headers) do |res|
-
             res.read_body do |body|
               file.write body
-              downloaded += body.size
-
-              if downloaded >= megabyte
-                downloaded -= megabyte
-                yield mb_down += 1
-              end
             end
           end # /@server
         rescue Timeout::Error
@@ -69,7 +62,9 @@ class HTTPDownload
           @server = Net::HTTP.start(@base_url.host, @base_url.port)
           retry
         end
-      end # /@list
+
+        yield part
+      end # /parts
     end # /File
   end
 
@@ -102,8 +97,8 @@ if File.exists? output_file
   exit 1 unless overwrite.match(/Y/i)
 end
 
+progress = ProgressBar.new(downloader.parts?, :bar, :elapsed, :eta, :counter)
 HTTPDownload.new(downloader, output_file) do |down|
-  print "Progress: "
-  down.fetch_all {|part| print (part > 0)? '.': 'r' }
+  down.fetch_all {|part| progress.increment! }
   puts "\nFinished recording: #{output_file}"
 end

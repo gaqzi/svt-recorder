@@ -1,3 +1,16 @@
+2012-09-09 Björn Andersson <ba@sanitarium.se>, v1.0.1
+
+	User request for a better progress bar, so I've obliged with the
+	excellent `progress_bar` gem by Paul Sadauskas.
+	https://github.com/paul/progress_bar
+
+	* svt-recorder uses a new progress bar that estimates time to
+	  completion, shows how long the download has been going on and
+	  also displays how many chunks that has been downloaded together
+	  with the total number of chunks.
+	* SVT::Recorder.fetch_playlist doesn't need to be called with
+	  a block anymore.
+
 2012-06-04 Björn Andersson <ba@sanitarium.se>, v1.0.0
 
 	SVT has changed their website and thus the way data is fetched.
