@@ -1,3 +1,15 @@
+2012-09-14  Björn Andersson  <ba@sanitarium.se>, v1.0.3
+
+	SVT changed so that the playlists downloaded for a bitrate could be
+	a complete URL instead of just part of a chunk. This new naming scheme
+	changed so that downloads didn't complete fully on new videos.
+
+	So now the script always use the complete URL from the playlist instead
+	of making up its own URL based on off how it ought to be. Thus this
+	should be more future proof.
+
+	Fingers crossed. :)
+
 2012-09-14  Björn Andersson  <ba@sanitarium.se>, v1.0.2
 
 	Oops, typo in the recorder which affected urls with characters that

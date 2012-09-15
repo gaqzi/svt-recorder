@@ -48,13 +48,14 @@ module SVT
 
         @bitrates   = {} # bitrate => stream
         @part_base  = ''
-        @first_part = 0
-        @last_part  = 0
+        @parts      = []
       end
 
       attr_reader :title
       attr_reader :base_url
       attr_reader :bitrate
+
+      def last_part ; @parts.size ; end
 
       # All part URL:s for a specific +bitrate+
       #
@@ -72,14 +73,17 @@ module SVT
                      bitrate
                    end
 
-        url = File.join(@base_url, @bitrates[@bitrate])
+        url = @bitrates[@bitrate]
+        unless url.match(/^http/)
+          url = File.join(@base_url, @bitrates[@bitrate])
+        end
 
         open(url).each do |row|
           next if row[0..0] == '#'
           row.strip!
 
           @part_base = File.dirname(row) if @part_base.empty?
-          @last_part += 1
+          @parts << File.basename(row)
         end
 
         self
@@ -101,13 +105,13 @@ module SVT
       #   A complete part download URL
       #
       # Returns:
-      #   All parts in an ordered array, first -> last
+      #   All parts in an ordered array, first -> last, full URL
       def parts
-        part_urls() if @last_part == 0
+        part_urls() if last_part == 0
 
         if block_given?
-          (@first_part...@last_part).each do |i|
-            yield "#{@part_base}/segment#{i}.ts"
+          @parts.each do |i|
+            yield "#{@part_base}/#{i}"
           end
         else
           # I want you Object#tap
@@ -122,15 +126,15 @@ module SVT
       # Returns:
       #   int the numbers of parts, 0 index
       def parts?
-        part_urls() if @last_part == 0
+        part_urls() if last_part == 0
 
-        return @last_part
+        return last_part
       end
 
       # Yields all +parts+ concatenated with base_url
       def all_parts
         parts do |part|
-          yield File.join(base_url, part)
+          yield "#{base_url}/#{part}"
         end
       end
 
@@ -145,7 +149,6 @@ module SVT
         bitrate = nil
         open(@stream).each do |row|
           row.strip!
-          row = File.basename(row) if row.match(/^http/)
 
           if bitrate
             @bitrates[bitrate] = CGI.unescape(row)

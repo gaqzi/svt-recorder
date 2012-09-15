@@ -21,14 +21,6 @@ module SVT
 
           data.title.should == title
         end
-
-        it 'should handle streams with http and just give of the basename' do
-          # An error when fetching Rapport videos, the playlist at times had
-          # a FQDN
-          data = SVT::Recorder::Base.new({:url => $stream_http,
-                                           :title => 'Whatever'})
-          data.parts[0].should == 'PG-1279307-001A-DOKUMENTUTIFRAN-02-hts-a-v1_Layer6/3512_Period1/segment0.ts'
-        end
       end
 
       let(:title)        { 'Glödlampskonspirationen' }

@@ -51,15 +51,15 @@ class HTTPDownload
     File.open(@file, 'wb+') do |file|
       @downloader.parts do |part|
         begin
-          @server.request_get(File.join(@base_url.path, part),
-                              @headers) do |res|
+          @server.request_get(part, @headers) do |res|
             res.read_body do |body|
               file.write body
             end
           end # /@server
-        rescue Timeout::Error
+        rescue Timeout::Error, EOFError, Errno::ECONNRESET => exception
           yield -1
           @server = Net::HTTP.start(@base_url.host, @base_url.port)
+          STDERR.puts "Connection error..."
           retry
         end
 
@@ -98,6 +98,7 @@ if File.exists? output_file
 end
 
 progress = ProgressBar.new(downloader.parts?, :bar, :elapsed, :eta, :counter)
+puts "Starting recording..."
 HTTPDownload.new(downloader, output_file) do |down|
   down.fetch_all {|part| progress.increment! }
   puts "\nFinished recording: #{output_file}"
