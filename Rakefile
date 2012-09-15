@@ -9,6 +9,7 @@ end
 desc "Release the gem into the wild"
 task :release => :build do
   system "git tag v#{SVT::Recorder::VERSION}"
+  system 'git push origin'
   system 'git push origin --tags'
   system "gem push svt-recorder-#{SVT::Recorder::VERSION}.gem"
 end
