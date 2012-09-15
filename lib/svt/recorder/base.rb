@@ -148,7 +148,7 @@ module SVT
           row = File.basename(row) if row.match(/^http/)
 
           if bitrate
-            @bitrates[bitrate] = CGI.escape(row)
+            @bitrates[bitrate] = CGI.unescape(row)
             bitrate = nil
           end
 

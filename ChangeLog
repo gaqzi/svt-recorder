@@ -1,4 +1,9 @@
-2012-09-09 Björn Andersson <ba@sanitarium.se>, v1.0.1
+2012-09-14  Björn Andersson  <ba@sanitarium.se>, v1.0.2
+
+	Oops, typo in the recorder which affected urls with characters that
+	can be escaped.
+
+2012-09-09  Björn Andersson  <ba@sanitarium.se>, v1.0.1
 
 	User request for a better progress bar, so I've obliged with the
 	excellent `progress_bar` gem by Paul Sadauskas.
@@ -11,7 +16,7 @@
 	* SVT::Recorder.fetch_playlist doesn't need to be called with
 	  a block anymore.
 
-2012-06-04 Björn Andersson <ba@sanitarium.se>, v1.0.0
+2012-06-04  Björn Andersson  <ba@sanitarium.se>, v1.0.0
 
 	SVT has changed their website and thus the way data is fetched.
 	Changed to the new format which basically is the same for both
@@ -24,14 +29,14 @@
 	I'm calling this 1.0 and possible support for RTMP will be
 	another major release at that point.
 
-2012-01-15 Björn Andersson <ba@sanitarium.se>, v0.9.6
+2012-01-15  Björn Andersson  <ba@sanitarium.se>, v0.9.6
 
 	Patch received from Anders Eurenius (aes on Github) that will
 	retry a chunk download if it times out.
 
 	Thanks Anders!
 
-2010-11-03 Björn Andersson  <ba@sanitarium.se>, v0.9.5
+2010-11-03  Björn Andersson  <ba@sanitarium.se>, v0.9.5
 
 	* svt-recorder flushes the output buffers when printing information.
 	* svt-recorder one dot in the progress meter is 1MB.
@@ -47,6 +52,6 @@
 	* Recorder::Base allow parts to be used in a block instead of
 	just returning an array.
 
-2010-11-02 Björn Andersson <ba@sanitarium.se>, v0.9
+2010-11-02  Björn Andersson  <ba@sanitarium.se>, v0.9
 
 	* First official release
